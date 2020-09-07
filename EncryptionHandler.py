@@ -1,7 +1,7 @@
 import base64
 import hashlib
-from Crypto import Random
-from Crypto.Cipher import AES
+from crypto import Random
+from crypto.Cipher import AES
 import time
 
 class AES_Handler(object):
