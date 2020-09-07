@@ -1,1 +1,1 @@
-web: FlaskServer
+web: gunicorn app:FlaskServer
