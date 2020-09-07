@@ -65,12 +65,12 @@ class APITesterClient:
         print(response.text)
         return json.loads(response.text)["token"]
 
-tester = APITesterClient("http://localhost:5000")
+tester = APITesterClient("https://tip-keciski-moryson.herokuapp.com/")
 tester.test_hello()
 #tester.test_register('konrad', 'jakismail@op.pl', 'haslo123')
 #tester.test_register('konrad3', 'jakismail2@op.pl', 'haslo123')
 sessionid = tester.test_login('konrad', 'haslo123')
-sessionid = tester.test_add_friend(sessionid, 'konrad3')
-sessionid2 = tester.test_login('konrad3', 'haslo123')
+#sessionid = tester.test_add_friend(sessionid, 'konrad3')
+#sessionid2 = tester.test_login('konrad3', 'haslo123')
 #sessionid2 = tester.test_approve_friend(sessionid2, 'konrad')
-sessionid2 = tester.test_get_notifications(sessionid2)
+sessionid = tester.test_get_notifications(sessionid)
