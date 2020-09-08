@@ -101,6 +101,51 @@ def approve_friends():
     else:
         return 'Fail', 400, {"Content-Type": "application/json"}
 
+@app.route("/reject", methods=['POST'])
+def reject_friends():
+    result = request.get_json()
+    user = sh.find_user_by_token(result["token"])
+    if user is not False:
+        sqlh.updateLastlogin(user)
+        result = sqlh.rejectInvitation(user, result["friend"])
+        sh.add_session(user)
+        token = sh.find_user_token(user)
+        if result != "Fail":
+            return token, 200, {"Content-Type": "application/json"}
+        else:
+            return "Fail", 400, {"Content-Type": "application/json"}
+    else:
+        return 'Fail', 400, {"Content-Type": "application/json"}
+
+@app.route("/mailchange", methods=['POST'])
+def change_mail():
+    result = request.get_json()
+    user = sh.find_user_by_token(result["token"])
+    if user is not False:
+        sqlh.updateLastlogin(user)
+        result = sqlh.changeMail(user, result["mail"])
+        sh.add_session(user)
+        token = sh.find_user_token(user)
+        if result != "Fail":
+            return token, 200, {"Content-Type": "application/json"}
+        else:
+            return "Fail", 400, {"Content-Type": "application/json"}
+    else:
+        return 'Fail', 400, {"Content-Type": "application/json"}
+
+@app.route("/delete", methods = ['GET'])
+def delete():
+    token = request.args.get('token')
+    user = sh.find_user_by_token(token)
+    if user is not False:
+        result = sqlh.deleteUser(user)
+
+        if result != "Fail":
+            return "Success", 200, {"Content-Type": "application/json"}
+        else:
+            return "Fail", 400, {"Content-Type": "application/json"}
+    else:
+        return "Fail", 400, {"Content-Type": "application/json"}
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

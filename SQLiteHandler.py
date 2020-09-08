@@ -40,17 +40,30 @@ class SQL_Handler(object):
         id2 = self.executeQuery(self.getIdTemplate(name2))[0][0]
         return "UPDATE friends SET approved=1 WHERE (id_user={0} AND id_friend={1}) OR (id_user={1} AND id_friend = {0})".format(id1, id2)
 
+    def rejectTemplate(self, name1, name2):
+        id1 = self.executeQuery(self.getIdTemplate(name1))[0][0]
+        id2 = self.executeQuery(self.getIdTemplate(name2))[0][0]
+        return "DELETE FROM friends WHERE (id_user={0} AND id_friend={1}) OR (id_user={1} AND id_friend = {0})".format(id1, id2)
+
     def insertFriendsTemplate(self, name1, name2):
         id1 = self.executeQuery(self.getIdTemplate(name1))[0][0]
         id2 = self.executeQuery(self.getIdTemplate(name2))[0][0]
         return "INSERT INTO friends (id_user, id_friend, approved, timestamp)" \
                "VALUES({0},{1},0,CURRENT_TIMESTAMP);".format(id1, id2)
 
+    def changeMailTemplate(self, name, mail):
+        id = self.executeQuery(self.getIdTemplate(name))[0][0]
+        return "UPDATE users SET mail = {0}" \
+               "WHERE id = {1});".format(mail, id)
+
     def checkPasswdTemplate(self, name):
         return "SELECT passwd from users WHERE name = '{0}'".format(name)
 
     def updateLastloginTemplate(self, name):
         return " UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE name = '{0}'".format(name)
+
+    def deleteUserTemplate(self, id):
+        return " DELETE FROM users WHERE id = {0}".format(id)
 
     def getFriendsTemplate(self, id):
         return """SELECT CASE
@@ -97,6 +110,20 @@ AND id2 is NOT NULL;""".format(id)
         else:
             return "Fail"
 
+    def changeMail(self, name, mail):
+        otheruser = self.executeQuery(self.getIdTemplate(name))
+        if len(otheruser) > 0:
+            self.executeModify(self.changeMailTemplate(name, mail))
+        else:
+            return "Fail"
+
+    def rejectInvitation(self, name1, name2):
+        otheruser = self.executeQuery(self.getIdTemplate(name2))
+        if len(otheruser) > 0:
+            self.executeModify(self.rejectTemplate(name1, name2))
+        else:
+            return "Fail"
+
     def checkPasswd(self, user, passwd):
         correct_passwd = self.executeQuery(self.checkPasswdTemplate(user))[0][0]
         correct_passwd = AES.decrypt(correct_passwd)
@@ -121,6 +148,13 @@ AND id2 is NOT NULL;""".format(id)
 
     def updateLastlogin(self, user):
         return self.executeModify(self.updateLastloginTemplate(user))
+
+    def deleteUser(self, user):
+        id = self.executeQuery(self.getIdTemplate(user))
+        if len(id) > 0:
+            return self.executeQuery(self.deleteUserTemplate(id[0][0]))
+        else:
+            return "Fail"
 
     def friends_to_json(self, data, new_token):
         # objects_list = []
