@@ -1,1 +1,1 @@
-web: gunicorn webrtc/webrtctest:app & python -m http.server & wait -n
+web: gunicorn webrtctest:app & python -m http.server & wait -n
