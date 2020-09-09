@@ -1,1 +1,1 @@
-web: gunicorn FlaskServer:app
+web: gunicorn webrtctest:app
